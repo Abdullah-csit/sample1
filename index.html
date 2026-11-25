@@ -1,0 +1,480 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>عداد الكلفة الذكي</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;700&display=swap">
+<style>
+/* Layout: RTL proposal page — 3D hero, then how-it-works, app, reports, price; one column on phones */
+:root{
+  --bg:#F2F4F1;--surface:#FFFFFF;--soft:#E6EBE7;--ink:#16201E;--muted:#56655F;--line:#D6DDD8;
+  --copper:#A9561D;--teal:#1F6B65;--warn:#B0372A;--amber:#9A6412;--ok:#2F7A45;
+  --display:"Readex Pro","IBM Plex Sans Arabic",Tahoma,sans-serif;
+  --body:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1514;--surface:#162020;--soft:#1C2927;--ink:#E4EBE8;--muted:#9AABA5;--line:#2A3836;
+  --copper:#E58E50;--teal:#5DB9AE;--warn:#EE7A66;--amber:#E2AC52;--ok:#6CC488;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1514;--surface:#162020;--soft:#1C2927;--ink:#E4EBE8;--muted:#9AABA5;--line:#2A3836;
+  --copper:#E58E50;--teal:#5DB9AE;--warn:#EE7A66;--amber:#E2AC52;--ok:#6CC488;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.75}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px;display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance;line-height:1.3}
+h1{font-size:clamp(30px,6vw,48px)}
+h2{font-size:clamp(22px,4vw,30px)}
+h3{font-size:18px;font-weight:500}
+p{margin:0}
+.eyebrow{font-size:13px;color:var(--copper);font-weight:600;letter-spacing:.02em}
+.lead{color:var(--muted);font-size:18px;max-width:58ch}
+.num{font-variant-numeric:tabular-nums}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:28px;align-items:center}
+.hero-text{display:flex;flex-direction:column;gap:16px;min-width:0}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.chip{font-size:13px;padding:4px 12px;border-radius:999px;background:var(--soft);color:var(--ink);border:1px solid var(--line)}
+.stage-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:10px;min-width:0}
+#stage{position:relative;width:100%;height:440px;border-radius:12px;background:var(--soft);overflow:hidden;touch-action:none}
+#stage canvas{display:block;width:100%;height:100%}
+#stage .fallback{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--muted);padding:24px}
+.views{display:flex;flex-wrap:wrap;gap:6px}
+.views button{font:inherit;font-size:14px;padding:6px 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.views button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.views button:focus-visible,.seg button:focus-visible{outline:2px solid var(--copper);outline-offset:2px}
+.hint{font-size:13px;color:var(--muted)}
+section{display:flex;flex-direction:column;gap:20px}
+.sec-head{display:flex;flex-direction:column;gap:6px;max-width:62ch}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;list-style:none;padding:0;margin:0;counter-reset:s}
+.steps li{counter-increment:s;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:6px}
+.steps li::before{content:counter(s);font-family:var(--display);font-size:15px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--copper);color:var(--bg)}
+.parts{width:100%;border-collapse:collapse;font-size:15px}
+.parts th,.parts td{text-align:right;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.parts th{font-size:13px;color:var(--muted);font-weight:500}
+.parts td:first-child{font-weight:600;white-space:nowrap}
+.scroll{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.app{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:32px;align-items:start}
+.phone{background:var(--ink);border-radius:36px;padding:10px;max-width:320px;width:100%;margin-inline:auto}
+.screen{background:var(--bg);border-radius:28px;padding:18px 14px;display:flex;flex-direction:column;gap:12px;min-height:560px}
+.app-top{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted)}
+.big{font-family:var(--display);font-size:34px;font-weight:700;line-height:1.2}
+.big small{font-size:16px;font-weight:500;color:var(--muted)}
+.bar-bg{height:8px;border-radius:999px;background:var(--soft);overflow:hidden}
+.bar-fill{height:100%;background:var(--copper);border-radius:999px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--soft);border-radius:10px;padding:3px;gap:3px}
+.seg button{font:inherit;font-size:14px;border:0;border-radius:8px;padding:6px;background:transparent;color:var(--muted);cursor:pointer}
+.seg button[aria-selected="true"]{background:var(--surface);color:var(--ink);font-weight:600}
+.chart-box{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px}
+.chart-box svg{width:100%;height:auto;display:block}
+.chart-box .lbl{fill:var(--muted);font-size:10px;font-family:var(--body)}
+.chart-box .grid{stroke:var(--line);stroke-width:1}
+.chart-box .barc{fill:var(--copper)}
+.chart-box .barhi{fill:var(--warn)}
+.chart-box .limit{stroke:var(--warn);stroke-width:1;stroke-dasharray:4 3}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:12px;color:var(--muted);text-align:center}
+.sum b{display:block;font-size:15px;color:var(--ink);font-weight:600}
+.notes{display:flex;flex-direction:column;gap:8px}
+.note{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.6}
+.dot{flex:0 0 10px;height:10px;border-radius:50%;margin-top:6px}
+.note b{display:block;font-size:14px}
+.note span{color:var(--muted)}
+.app-side{display:flex;flex-direction:column;gap:16px;min-width:0}
+.list{margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:6px}
+.tag{font-size:12px;color:var(--muted)}
+.cards3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.rep{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.rep .when{font-size:13px;color:var(--teal);font-weight:600}
+.rep ul{margin:0;padding-inline-start:18px;font-size:15px}
+.price{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:24px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px}
+.total{display:flex;flex-direction:column;gap:8px}
+.total .amount{font-family:var(--display);font-size:clamp(40px,8vw,60px);font-weight:700;color:var(--copper);line-height:1.1}
+.total .amount small{font-size:20px;color:var(--ink)}
+.split{display:flex;flex-direction:column;gap:12px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;font-size:15px}
+.row .track{grid-column:1/-1;height:6px;border-radius:999px;background:var(--soft);overflow:hidden}
+.row .track i{display:block;height:100%;background:var(--teal);border-radius:999px}
+.terms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:4px}
+.term{border-top:2px solid var(--copper);padding-top:10px;display:flex;flex-direction:column;gap:2px}
+.term b{font-family:var(--display);font-size:18px}
+.term span{font-size:14px;color:var(--muted)}
+.include{columns:2;column-gap:24px;margin:0;padding-inline-start:20px;font-size:15px}
+.include li{break-inside:avoid;margin-bottom:6px}
+.safety{border:1px solid var(--warn);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:8px;background:var(--surface)}
+.safety h3{color:var(--warn)}
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media (max-width:860px){
+  .hero,.app,.price{grid-template-columns:minmax(0,1fr)}
+  .steps,.cards3,.terms{grid-template-columns:minmax(0,1fr)}
+  #stage{height:360px}
+  .include{columns:1}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap" dir="rtl" lang="ar">
+
+  <header class="hero">
+    <div class="hero-text">
+      <span class="eyebrow">عرض مشروع تخرج</span>
+      <h1>عداد الكلفة الذكي</h1>
+      <p class="lead">جهاز صغير ينحط بين البلاك والجهاز الكهربائي، يحسبلك شكد صرفت كهرباء بالدينار يوم بيوم وشهر بشهر، ويدزلك إشعار على الموبايل من تعبر الحد اللي محدده.</p>
+      <div class="facts">
+        <span class="chip">ESP32</span>
+        <span class="chip">PZEM-004T 100A</span>
+        <span class="chip">شاشة OLED</span>
+        <span class="chip">تطبيق موبايل</span>
+        <span class="chip">220 فولت</span>
+      </div>
+    </div>
+
+    <div class="stage-card">
+      <div id="stage" aria-label="نموذج ثلاثي الأبعاد للجهاز تكدر تدوّره">
+        <div class="fallback" id="fallback" hidden>المتصفح مالتك ما يدعم العرض الثلاثي الأبعاد. جرّب من متصفح ثاني.</div>
+      </div>
+      <div class="views" role="group" aria-label="زوايا العرض">
+        <button type="button" data-view="angle" aria-pressed="true">مايل</button>
+        <button type="button" data-view="front" aria-pressed="false">من الامام</button>
+        <button type="button" data-view="side" aria-pressed="false">من الجانب</button>
+        <button type="button" data-view="back" aria-pressed="false">من الخلف</button>
+        <button type="button" data-view="top" aria-pressed="false">من الاعلى</button>
+        <button type="button" data-view="inside" aria-pressed="false">من الداخل</button>
+      </div>
+      <p class="hint">اسحب بإصبعك حتى تدوّره، وكبّر وصغّر بإصبعين. زر "من الداخل" يخلي العلبة شفافة حتى تشوف القطع.</p>
+    </div>
+  </header>
+
+  <section>
+    <div class="sec-head">
+      <h2>شلون يشتغل</h2>
+      <p class="lead">ثلاث خطوات، والمستخدم ما يحتاج يسوي شي غير يوصله.</p>
+    </div>
+    <ol class="steps">
+      <li><h3>توصله بالبلك</h3><p>تركب فيشة الجهاز بالبلك، وتركب الجهاز اللي تريد تقيسه (سخان، مكيف، ثلاجة) بالمقبس اللي بيه.</p></li>
+      <li><h3>يقيس ويحسب</h3><p>الحساس يقيس الفولتية والتيار والقدرة كل ثانية، والمعالج يحوّلها لكيلوواط ساعة ويحسب الكلفة حسب تسعيرة الشرائح.</p></li>
+      <li><h3>ينبهك</h3><p>الكلفة تطلع على الشاشة وبالتطبيق. إذا قربت من الحد يضوي أصفر، وإذا عبرته يضوي أحمر ويصفر ويوصلك إشعار.</p></li>
+    </ol>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>شنو اكو بالجهاز</h2>
+      <p class="lead">القطع كلها متوفرة بالسوق العراقي، وكل وحدة إلها شغلة واضحة.</p>
+    </div>
+    <div class="scroll">
+      <table class="parts">
+        <thead><tr><th>القطعة</th><th>شغلها</th></tr></thead>
+        <tbody>
+          <tr><td>ESP32</td><td>عقل الجهاز: يقرا من الحساس، يحسب الكلفة، يشغّل الشاشة، ويرفع البيانات للتطبيق عبر الواي فاي.</td></tr>
+          <tr><td>PZEM-004T 100A</td><td>يقيس الفولتية والتيار والقدرة والطاقة ومعامل القدرة بدقة عالية، وحلقته تلزم السلك بدون قطع.</td></tr>
+          <tr><td>شاشة OLED 1.3"</td><td>تعرض كلفة اليوم بخط كبير، وتتقلب على القدرة واستهلاك الشهر.</td></tr>
+          <tr><td>ليد RGB وصفارة</td><td>أخضر طبيعي، أصفر قربت من الحد، أحمر مع صوت من تعبره.</td></tr>
+          <tr><td>زر</td><td>تقليب صفحات الشاشة وإسكات التنبيه.</td></tr>
+          <tr><td>محوّل 220V إلى 5V</td><td>يغذي الجهاز من نفس الكهرباء، فما يحتاج شاحن خارجي.</td></tr>
+          <tr><td>فيوز ومقبس 13A</td><td>حماية من الأحمال الزايدة، ومخرج للجهاز اللي ينقاس.</td></tr>
+          <tr><td>علبة ABS</td><td>عازلة ومسكّرة بالبراغي، وجهة الـ220 مفصولة عن جهة الإشارات بحاجز.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>التطبيق</h2>
+      <p class="lead">تتابع الاستهلاك من أي مكان، وتشوف تقارير اليوم والأسبوع والشهر، وتحدد الحد اللي تريده.</p>
+    </div>
+    <div class="app">
+      <div class="phone" aria-label="شكل التطبيق على الموبايل">
+        <div class="screen">
+          <div class="app-top"><span>عداد الكلفة</span><span>متصل ●</span></div>
+          <div>
+            <div class="tag" id="appLabel">كلفة اليوم لحد هسه</div>
+            <div class="big num" id="appBig">1,250 <small>د.ع</small></div>
+          </div>
+          <div>
+            <div class="bar-bg"><div class="bar-fill" id="appProg" style="width:89%"></div></div>
+            <div class="tag num" id="appProgTxt">89% من حد اليوم (1,400 د.ع)</div>
+          </div>
+          <div class="seg" role="tablist" aria-label="فترة التقرير">
+            <button type="button" role="tab" id="t-day" aria-selected="true" data-p="day">اليوم</button>
+            <button type="button" role="tab" id="t-week" aria-selected="false" data-p="week">الأسبوع</button>
+            <button type="button" role="tab" id="t-month" aria-selected="false" data-p="month">الشهر</button>
+          </div>
+          <div class="chart-box"><svg id="chart" viewBox="0 0 300 150" role="img" aria-label="مخطط الاستهلاك"></svg></div>
+          <div class="sum num" id="appSum"></div>
+          <div class="notes">
+            <div class="note"><i class="dot" style="background:var(--warn)"></i><div><b>عبرت حد اليوم</b><span>الكلفة وصلت 1,480 د.ع والحد 1,400</span></div></div>
+            <div class="note"><i class="dot" style="background:var(--amber)"></i><div><b>الفولتية نازلة</b><span>175 فولت، انتبه للأجهزة الحساسة</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="app-side">
+        <h3>الإشعارات اللي توصل للموبايل</h3>
+        <ul class="list">
+          <li>قربت من حد الاستهلاك اليومي مثلاً (80%) الي اختاريناه باليوم .</li>
+          <li>صرفت جزء كبير من ميزانية الشهر قبل ما يخلص.</li>
+          <li>الفولتية نزلت أو صعدت عن الحد الطبيعي.</li>
+          <li>الكهرباء انقطعت أو رجعت.</li>
+          <li>جهاز ظل شغّال فترة طويلة بقدرة عالية.</li>
+          <li>تقرير نهاية اليوم جاهز.</li>
+        </ul>
+        <h3>الإعدادات اللي يتحكم بيها المستخدم</h3>
+        <ul class="list">
+          <li>حد الكلفة اليومي والشهري بالدينار.</li>
+          <li>أسعار شرائح التعرفة، حتى إذا تغيّرت التسعيرة ما يحتاج يعدّل الكود.</li>
+          <li>تشغيل أو إطفاء كل نوع من الإشعارات.</li>
+        </ul>
+        <p class="tag">إذا انقطع النت، الجهاز يبقى يحسب ويعرض على الشاشة، ويرفع اللي فاته من يرجع الاتصال. الأرقام بالموبايل هنا توضيحية.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>التقارير</h2>
+      <p class="lead">ثلاث تقارير تطلع بالتطبيق تلقائياً، كل واحد بوقته.</p>
+    </div>
+    <div class="cards3">
+      <div class="rep"><span class="when">كل يوم، بنص الليل</span><h3>التقرير اليومي</h3>
+        <ul><li>الكلفة والكيلوواط ساعة لليوم</li><li>الاستهلاك ساعة بساعة</li><li>أعلى قدرة ووقتها</li><li>مقارنة باليوم اللي قبله</li></ul></div>
+      <div class="rep"><span class="when">كل جمعة</span><h3>التقرير الأسبوعي</h3>
+        <ul><li>كلفة كل يوم بالأسبوع</li><li>أغلى يوم وأرخص يوم</li><li>معدل الاستهلاك اليومي</li><li>مقارنة بالأسبوع الفات</li></ul></div>
+      <div class="rep"><span class="when">آخر الشهر</span><h3>التقرير الشهري</h3>
+        <ul><li>الكلفة الكلية حسب الشرائح</li><li>كم مرة عبرت الحد</li><li>توقع كلفة الشهر الجاي</li><li>نصايح للترشيد حسب أوقات الذروة</li></ul></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>العرض والسعر</h2>
+    </div>
+    <div class="price">
+      <div class="total">
+        <span class="eyebrow">السعر الكلي</span>
+        <div class="amount num">550,000 <small>د.ع</small></div>
+        <p>شامل القطع، والعلبة، والتنفيذ والبرمجة، والتطبيق مع التقارير والإشعارات، والجانب النظري.</p>
+        <div class="terms">
+          <div class="term"><b class="num">150,000</b><span>عربون عند الاتفاق، يغطي القطع</span></div>
+          <div class="term"><b class="num">400,000</b><span>الباقي عند التسليم والتجربة</span></div>
+      
+        </div>
+      </div>
+      <div class="split">
+        <div class="row"><span>القطع والعلبة</span><b class="num">150,000</b><div class="track"><i style="width:27.3%"></i></div></div>
+        <div class="row"><span>تنفيذ الجهاز والبرمجة</span><b class="num">250,000</b><div class="track"><i style="width:45.5%"></i></div></div>
+        <div class="row"><span>التطبيق والتقارير والإشعارات</span><b class="num">50,000</b><div class="track"><i style="width:9.1%"></i></div></div>
+        <div class="row"><span>الجانب النظري (التقرير)</span><b class="num">100,000</b><div class="track"><i style="width:18.2%"></i></div></div>
+      </div>
+    </div>
+    <h3>شنو تستلم</h3>
+    <ul class="include">
+      <li>الجهاز جاهز ومجرّب داخل العلبة</li>
+      <li>التطبيق مربوط بالجهاز ومضبوط</li>
+      <li>الكود كامل مع شرح لكل جزء</li>
+      <li>مخطط التوصيل وقائمة القطع</li>
+      <li>التقرير النظري بفصوله</li>
+      <li>تعديلات حسب ملاحظات المشرف</li>
+      <li>جلسة شرح قبل المناقشة</li>
+      <li>برزنتيشن + فحص استلال في حال تم المطالبه بذلك</li>
+    </ul>
+  </section>
+
+
+  <footer>الأرقام اللي بالشاشة والتطبيق بهالصفحة توضيحية للعرض، والأرقام الحقيقية تطلع من القياس.</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function(){
+  var host=document.getElementById('stage');
+  var fb=document.getElementById('fallback');
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!window.THREE||!THREE.OrbitControls){fb.hidden=false;return;}
+  var renderer;
+  try{renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});}catch(e){fb.hidden=false;return;}
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  host.appendChild(renderer.domElement);
+  var scene=new THREE.Scene();
+  var camera=new THREE.PerspectiveCamera(34,1,0.1,100);
+  camera.position.set(2.6,1.3,3.9);
+  var controls=new THREE.OrbitControls(camera,renderer.domElement);
+  controls.enableDamping=true;controls.enablePan=false;controls.minDistance=2.2;controls.maxDistance=8;
+  controls.target.set(0,-0.25,0);
+  controls.autoRotate=!reduce;controls.autoRotateSpeed=0.8;
+
+  scene.add(new THREE.HemisphereLight(0xffffff,0x8a9a96,0.85));
+  var key=new THREE.DirectionalLight(0xffffff,0.85);key.position.set(3,5,5);scene.add(key);
+  var rim=new THREE.DirectionalLight(0xffffff,0.35);rim.position.set(-4,2,-4);scene.add(rim);
+
+  var FONT='"IBM Plex Sans Arabic","Readex Pro",Tahoma,sans-serif';
+  function M(c,o){o=o||{};return new THREE.MeshStandardMaterial({color:c,roughness:o.r!==undefined?o.r:0.5,metalness:o.m||0,emissive:o.e||0x000000,emissiveIntensity:o.ei||1});}
+  function box(w,h,d,mat,x,y,z,parent){var m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);(parent||scene).add(m);return m;}
+  function rr(w,h,r){var s=new THREE.Shape(),x=-w/2,y=-h/2;s.moveTo(x+r,y);s.lineTo(x+w-r,y);s.quadraticCurveTo(x+w,y,x+w,y+r);s.lineTo(x+w,y+h-r);s.quadraticCurveTo(x+w,y+h,x+w-r,y+h);s.lineTo(x+r,y+h);s.quadraticCurveTo(x,y+h,x,y+h-r);s.lineTo(x,y+r);s.quadraticCurveTo(x,y,x+r,y);return s;}
+  function canvasTex(w,h){var c=document.createElement('canvas');c.width=w;c.height=h;var t=new THREE.CanvasTexture(c);t.anisotropy=4;return {c:c,g:c.getContext('2d'),t:t};}
+
+  var W=1.0,H=1.5,D=0.7,FZ=D/2+0.02;
+  var shellMat=M(0xE8ECE9,{r:0.55});shellMat.transparent=true;
+  var lidMat=M(0xF6F7F5,{r:0.45});lidMat.transparent=true;
+  var bodyGeo=new THREE.ExtrudeGeometry(rr(W,H,0.09),{depth:D,bevelEnabled:true,bevelThickness:0.02,bevelSize:0.02,bevelSegments:3,curveSegments:8});
+  bodyGeo.translate(0,0,-D/2);
+  scene.add(new THREE.Mesh(bodyGeo,shellMat));
+  var lidGeo=new THREE.ExtrudeGeometry(rr(W-0.08,H-0.08,0.06),{depth:0.012,bevelEnabled:false,curveSegments:8});
+  var lid=new THREE.Mesh(lidGeo,lidMat);lid.position.z=FZ;scene.add(lid);
+  var fz=FZ+0.012;
+
+  var screwMat=M(0xA9B3B0,{m:0.6,r:0.3});
+  [[-0.4,0.66],[0.4,0.66],[-0.4,-0.66],[0.4,-0.66]].forEach(function(p){var s=new THREE.Mesh(new THREE.CylinderGeometry(0.022,0.022,0.012,16),screwMat);s.rotation.x=Math.PI/2;s.position.set(p[0],p[1],fz+0.004);scene.add(s);});
+
+  var title=canvasTex(512,64);
+  function drawTitle(){var g=title.g;g.clearRect(0,0,512,64);g.fillStyle='#2D3A37';g.font='600 34px '+FONT;g.textAlign='center';g.textBaseline='middle';g.direction='rtl';g.fillText('عداد الكلفة الذكي',256,34);title.t.needsUpdate=true;}
+  var titleMesh=new THREE.Mesh(new THREE.PlaneGeometry(0.72,0.09),new THREE.MeshBasicMaterial({map:title.t,transparent:true}));
+  titleMesh.position.set(0,0.6,fz+0.002);scene.add(titleMesh);
+
+  box(0.72,0.42,0.03,M(0x1A1D1F,{r:0.4}),0,0.3,fz+0.015);
+  var scr=canvasTex(512,256);
+  var screenMesh=new THREE.Mesh(new THREE.PlaneGeometry(0.64,0.32),new THREE.MeshBasicMaterial({map:scr.t}));
+  screenMesh.position.set(0,0.3,fz+0.031);scene.add(screenMesh);
+  var cost=1250,page=0;
+  function fmt(n){return Math.round(n).toLocaleString('en-US');}
+  function drawScreen(){
+    var g=scr.g;g.fillStyle='#050607';g.fillRect(0,0,512,256);
+    g.textAlign='center';g.textBaseline='middle';g.direction='rtl';
+    if(page===0){g.fillStyle='#8FDDF5';g.font='500 30px '+FONT;g.fillText('كلفة اليوم',256,52);
+      g.fillStyle='#FFFFFF';g.font='700 76px '+FONT;g.fillText(fmt(cost)+' د.ع',256,132);
+      g.fillStyle='#8FDDF5';g.font='400 26px '+FONT;g.direction='ltr';g.fillText('412 W  |  9.8 kWh  |  221 V',256,210);}
+    else if(page===1){g.fillStyle='#8FDDF5';g.font='500 30px '+FONT;g.fillText('القدرة الحالية',256,52);
+      g.fillStyle='#FFFFFF';g.font='700 76px '+FONT;g.direction='ltr';g.fillText('412 W',256,132);
+      g.fillStyle='#8FDDF5';g.font='400 26px '+FONT;g.fillText('1.86 A  |  PF 0.98',256,210);}
+    else{g.fillStyle='#8FDDF5';g.font='500 30px '+FONT;g.fillText('كلفة الشهر',256,52);
+      g.fillStyle='#FFFFFF';g.font='700 70px '+FONT;g.fillText('27,300 د.ع',256,132);
+      g.fillStyle='#8FDDF5';g.font='400 26px '+FONT;g.direction='ltr';g.fillText('214 kWh',256,210);}
+    scr.t.needsUpdate=true;
+  }
+
+  var ledRing=new THREE.Mesh(new THREE.CylinderGeometry(0.055,0.055,0.012,24),M(0xCDD5D2,{r:0.4}));ledRing.rotation.x=Math.PI/2;ledRing.position.set(-0.26,-0.02,fz+0.006);scene.add(ledRing);
+  var ledMat=M(0x2E9E4F,{e:0x2E9E4F,ei:0.9,r:0.2});
+  var led=new THREE.Mesh(new THREE.SphereGeometry(0.035,24,16),ledMat);led.position.set(-0.26,-0.02,fz+0.02);scene.add(led);
+  var btnBase=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.014,32),M(0x3E4E54,{r:0.5}));btnBase.rotation.x=Math.PI/2;btnBase.position.set(0,-0.02,fz+0.007);scene.add(btnBase);
+  var btn=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.03,32),M(0x60757C,{r:0.4}));btn.rotation.x=Math.PI/2;btn.position.set(0,-0.02,fz+0.02);scene.add(btn);
+  var holeMat=M(0x2B3335,{r:0.8});
+  for(var i=-1;i<=1;i++)for(var j=-1;j<=1;j++){var h=new THREE.Mesh(new THREE.CylinderGeometry(0.011,0.011,0.006,12),holeMat);h.rotation.x=Math.PI/2;h.position.set(0.26+i*0.035,-0.02+j*0.035,fz+0.003);scene.add(h);}
+  box(0.78,0.006,0.004,M(0xC9D1CD),0,-0.13,fz+0.002);
+
+  var plate=new THREE.Mesh(new THREE.ExtrudeGeometry(rr(0.44,0.44,0.05),{depth:0.035,bevelEnabled:false,curveSegments:8}),M(0xFFFFFF,{r:0.35}));
+  plate.position.set(0,-0.42,fz);scene.add(plate);
+  var slotMat=M(0x1E2426,{r:0.9});
+  box(0.035,0.09,0.006,slotMat,0,-0.35,fz+0.036);
+  box(0.09,0.035,0.006,slotMat,-0.09,-0.5,fz+0.036);
+  box(0.09,0.035,0.006,slotMat,0.09,-0.5,fz+0.036);
+
+  var fuse=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,0.07,24),M(0x22282A,{r:0.5}));fuse.rotation.z=Math.PI/2;fuse.position.set(W/2+0.05,0.35,0.05);scene.add(fuse);
+  var fuseCap=new THREE.Mesh(new THREE.CylinderGeometry(0.038,0.038,0.03,24),M(0x3A4447,{r:0.4}));fuseCap.rotation.z=Math.PI/2;fuseCap.position.set(W/2+0.1,0.35,0.05);scene.add(fuseCap);
+  box(0.05,0.1,0.16,M(0x22282A),W/2+0.035,0.05,0.05);
+  var rocker=box(0.03,0.075,0.12,M(0xC8372D,{r:0.4}),W/2+0.07,0.05,0.05);rocker.rotation.x=0.18;
+  for(var k=0;k<5;k++)box(0.01,0.04,0.36,holeMat,-W/2-0.021,0.3-k*0.08,0);
+
+  var back=canvasTex(512,320);
+  (function(){var g=back.g;g.fillStyle='#FFFFFF';g.fillRect(0,0,512,320);g.strokeStyle='#2D3A37';g.lineWidth=4;g.strokeRect(8,8,496,304);
+    g.fillStyle='#2D3A37';g.textAlign='center';g.direction='rtl';g.font='600 36px '+FONT;g.fillText('عداد الكلفة الذكي',256,64);
+    g.font='400 26px '+FONT;g.direction='ltr';g.fillText('220-240V ~ 50Hz   |   Max 13A',256,130);g.fillText('ESP32  +  PZEM-004T',256,180);
+    g.direction='rtl';g.fillText('لا تفتح الجهاز وهو موصول',256,250);back.t.needsUpdate=true;})();
+  var backMesh=new THREE.Mesh(new THREE.PlaneGeometry(0.62,0.39),new THREE.MeshBasicMaterial({map:back.t}));
+  backMesh.rotation.y=Math.PI;backMesh.position.set(0,0.1,-D/2-0.021);scene.add(backMesh);
+  [-0.25,0.25].forEach(function(x){var kh=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.006,16),holeMat);kh.rotation.x=Math.PI/2;kh.position.set(x,0.6,-D/2-0.022);scene.add(kh);});
+
+  var cableMat=M(0x2A2F31,{r:0.6});
+  var gland=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.06,0.06,20),M(0x3A4245));gland.position.set(-0.25,-H/2-0.04,0);scene.add(gland);
+  var curve=new THREE.CatmullRomCurve3([new THREE.Vector3(-0.25,-0.8,0),new THREE.Vector3(-0.25,-1.05,0.05),new THREE.Vector3(-0.12,-1.25,0.35),new THREE.Vector3(0.05,-1.32,0.62)]);
+  scene.add(new THREE.Mesh(new THREE.TubeGeometry(curve,40,0.025,10,false),cableMat));
+  var plug=new THREE.Group();plug.position.set(0.12,-1.34,0.75);plug.rotation.y=0.5;scene.add(plug);
+  box(0.2,0.24,0.14,M(0xF4F5F3,{r:0.4}),0,0,0,plug);
+  var pin=M(0xB9A26A,{m:0.8,r:0.3});
+  box(0.022,0.05,0.09,pin,0,0.06,0.11,plug);box(0.05,0.022,0.09,pin,-0.05,-0.05,0.11,plug);box(0.05,0.022,0.09,pin,0.05,-0.05,0.11,plug);
+
+  var inner=new THREE.Group();scene.add(inner);
+  box(0.9,0.012,0.6,M(0xE0A23A,{r:0.6}),0,0.06,-0.02,inner);
+  box(0.5,0.27,0.016,M(0x1D2633,{r:0.5}),0,0.36,-0.27,inner);
+  box(0.18,0.2,0.03,M(0xB7BEC2,{m:0.7,r:0.3}),-0.12,0.36,-0.25,inner);
+  box(0.74,0.31,0.016,M(0x2F6E4A,{r:0.5}),0,-0.3,-0.27,inner);
+  box(0.12,0.1,0.06,M(0x2B5FA3,{r:0.5}),0.28,-0.3,-0.23,inner);
+  box(0.3,0.18,0.15,M(0x161A1C,{r:0.5}),0.28,-0.6,-0.12,inner);
+  var ct=new THREE.Mesh(new THREE.TorusGeometry(0.1,0.035,14,36),M(0x3C4447,{r:0.5}));ct.rotation.x=Math.PI/2;ct.position.set(-0.25,-0.6,0.02);inner.add(ct);
+  function wire(pts,c,r){var cv=new THREE.CatmullRomCurve3(pts.map(function(p){return new THREE.Vector3(p[0],p[1],p[2]);}));inner.add(new THREE.Mesh(new THREE.TubeGeometry(cv,40,r||0.014,8,false),M(c,{r:0.5})));}
+  wire([[-0.25,-0.77,0],[-0.25,-0.6,0.02],[-0.2,-0.48,0.12],[0,-0.42,0.2]],0x8B4A2B);
+  wire([[-0.22,-0.77,-0.04],[-0.1,-0.65,0.05],[0.05,-0.48,0.18]],0x2B5FA3);
+  wire([[0.28,-0.27,-0.21],[0.32,-0.05,-0.15],[0.18,0.3,-0.25]],0xE5C24A,0.008);
+  wire([[0.3,-0.27,-0.21],[0.36,-0.02,-0.15],[0.2,0.32,-0.25]],0x3FA34D,0.008);
+
+  function setXray(on){var o=on?0.16:1;[shellMat,lidMat].forEach(function(m){m.opacity=o;m.depthWrite=!on;m.needsUpdate=true;});}
+
+  var views={angle:[2.6,1.3,3.9],front:[0,-0.15,4.6],side:[4.6,-0.15,0.2],back:[0,-0.15,-4.6],top:[0.01,4.6,0.4],inside:[2.0,1.0,3.0]};
+  var goal=null;
+  var btns=document.querySelectorAll('.views button');
+  Array.prototype.forEach.call(btns,function(b){b.addEventListener('click',function(){
+    Array.prototype.forEach.call(btns,function(o){o.setAttribute('aria-pressed',o===b?'true':'false');});
+    var v=b.getAttribute('data-view');setXray(v==='inside');controls.autoRotate=false;
+    goal=new THREE.Vector3().fromArray(views[v]);
+    if(reduce){camera.position.copy(goal);goal=null;}
+  });});
+  controls.addEventListener('start',function(){goal=null;controls.autoRotate=false;});
+
+  function resize(){var w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+  if(window.ResizeObserver)new ResizeObserver(resize).observe(host);else window.addEventListener('resize',resize);
+  resize();
+
+  drawTitle();drawScreen();
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){drawTitle();drawScreen();});
+
+  var states=[[0x2E9E4F,6],[0xE0A23A,3],[0xD23B2E,3]],t0=performance.now(),lastSec=0;
+  function loop(now){
+    var s=((now-t0)/1000)%12,c=s<6?states[0][0]:(s<9?states[1][0]:states[2][0]);
+    if(ledMat.color.getHex()!==c){ledMat.color.setHex(c);ledMat.emissive.setHex(c);}
+    var sec=Math.floor((now-t0)/1000);
+    if(sec!==lastSec){lastSec=sec;cost+=1.5;if(sec%4===0)page=(page+1)%3;drawScreen();}
+    if(goal){camera.position.lerp(goal,0.08);if(camera.position.distanceTo(goal)<0.01){camera.position.copy(goal);goal=null;}}
+    controls.update();renderer.render(scene,camera);requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+
+(function(){
+  var data={
+    day:{label:'كلفة اليوم لحد هسه',big:'1,250',prog:89,progTxt:'89% من حد اليوم (1,400 د.ع)',
+      cats:['12ص','2','4','6','8','10','12ظ','2','4','6','8','10'],
+      vals:[60,45,40,55,90,110,150,180,170,140,120,90],limit:null,
+      sum:[['9.8','كيلوواط ساعة'],['2 العصر','أعلى ساعة'],['+6%','عن البارحة']]},
+    week:{label:'كلفة الأسبوع',big:'8,940',prog:76,progTxt:'76% من حد الأسبوع (11,800 د.ع)',
+      cats:['سبت','أحد','اثنين','ثلاثاء','أربعاء','خميس','جمعة'],
+      vals:[1180,1320,1050,1460,1210,1270,1450],limit:1400,
+      sum:[['1,277','معدل اليوم'],['الثلاثاء','أغلى يوم'],['2','مرات عبرت الحد']]},
+    month:{label:'كلفة الشهر لحد هسه',big:'27,300',prog:68,progTxt:'68% من حد الشهر (40,000 د.ع)',
+      cats:['أسبوع 1','أسبوع 2','أسبوع 3','أسبوع 4'],
+      vals:[7900,9100,8940,1360],limit:null,
+      sum:[['214','كيلوواط ساعة'],['38,500','توقع الشهر'],['4','مرات عبرت الحد']]}
+  };
+  var svg=document.getElementById('chart'),NS='http://www.w3.org/2000/svg';
+  function el(n,a){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);return e;}
+  function niceMax(v){var p=Math.pow(10,Math.floor(Math.log10(v))),n=v/p;return (n<=2?2:n<=5?5:10)*p;}
+  function draw(key){
+    var d=data[key];while(svg.firstChild)svg.removeChild(svg.firstChild);
+    var L=34,R=292,T=12,B=124,n=d.vals.length,max=niceMax(Math.max.apply(null,d.vals.concat(d.limit||0)));
+    for(var i=0;i<=2;i++){var v=max*i/2,y=B-(B-T)*i/2;svg.appendChild(el('line',{x1:L,x2:R,y1:y,y2:y,'class':'grid'}));
+      var tx=el('text',{x:L-4,y:y+3,'text-anchor':'end','class':'lbl'});tx.textContent=v>=1000?(v/1000)+'k':v;svg.appendChild(tx);}
+    var slot=(R-L)/n,bw=Math.min(slot*0.62,34);
+    d.vals.forEach(function(v,i){var x=R-slot*(i+0.5)-bw/2,h=(B-T)*v/max;
+      svg.appendChild(el('rect',{x:x,y:B-h,width:bw,height:h,rx:2,'class':(d.limit&&v>d.limit)?'barhi':'barc'}));
+      if(n<=7||i%2===0){var t=el('text',{x:x+bw/2,y:B+16,'text-anchor':'middle','class':'lbl'});t.textContent=d.cats[i];svg.appendChild(t);}});
+    if(d.limit){var ly=B-(B-T)*d.limit/max;svg.appendChild(el('line',{x1:L,x2:R,y1:ly,y2:ly,'class':'limit'}));}
+    document.getElementById('appLabel').textContent=d.label;
+    document.getElementById('appBig').innerHTML=d.big+' <small>د.ع</small>';
+    document.getElementById('appProg').style.width=d.prog+'%';
+    document.getElementById('appProgTxt').textContent=d.progTxt;
+    document.getElementById('appSum').innerHTML=d.sum.map(function(s){return '<div><b>'+s[0]+'</b>'+s[1]+'</div>';}).join('');
+  }
+  var tabs=document.querySelectorAll('.seg button');
+  Array.prototype.forEach.call(tabs,function(b){b.addEventListener('click',function(){
+    Array.prototype.forEach.call(tabs,function(o){o.setAttribute('aria-selected',o===b?'true':'false');});draw(b.getAttribute('data-p'));});});
+  draw('day');
+})();
+</script>
+
+</body></html>
